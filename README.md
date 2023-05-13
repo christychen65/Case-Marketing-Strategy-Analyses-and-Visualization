@@ -44,6 +44,299 @@ library(ggplot2)
 library(dplyr)
 library(tidyr)
 ```
+```
+#Loading csv files
+daily_activity <- read.csv("/kaggle/input/fitbit/Fitabase Data 4.12.16-5.12.16/dailyActivity_merged.csv")
+
+daily_steps <- read.csv("/kaggle/input/fitbit/Fitabase Data 4.12.16-5.12.16/dailySteps_merged.csv")
+
+sleep_day <- read.csv("/kaggle/input/fitbit/Fitabase Data 4.12.16-5.12.16/sleepDay_merged.csv")
+
+daily_calories <- read.csv("/kaggle/input/fitbit/Fitabase Data 4.12.16-5.12.16/dailyCalories_merged.csv")
+
+weight_info <- read.csv("/kaggle/input/fitbit/Fitabase Data 4.12.16-5.12.16/weightLogInfo_merged.csv")
+
+daily_intensity <- read.csv("/kaggle/input/fitbit/Fitabase Data 4.12.16-5.12.16/dailyIntensities_merged.csv")
+```
+* Then, let's check for duplicates and N/As. We will remove any duplicates or N/A values.
+```
+#Identifying duplicates : the result shows that the sleep_day table contains 3 duplicates. 
+sum(duplicated(daily_activity))
+sum(duplicated(daily_steps))
+sum(duplicated(sleep_day))
+sum(duplicated(daily_calories))
+sum(duplicated(weight_info))
+sum(duplicated(daily_intensity))
+```
+#Removing duplicates and N/A values
+daily_activity <- daily_activity %>% 
+  distinct() %>% 
+  drop_na()
+
+daily_steps <- daily_steps %>% 
+  distinct() %>% 
+  drop_na()
+
+sleep_day <- sleep_day %>% 
+  distinct() %>% 
+  drop_na()
+
+daily_calories <- daily_calories %>% 
+  distinct() %>% 
+  drop_na()
+
+weight_infor <- weight_info %>%
+  distinct() %>%
+  drop_na()
+
+daily_intensity <- daily_intensity %>% 
+  distinct() %>% 
+  drop_na()
+```
+  * After removing the duplicates, we'd like to change date format to m/d/y, add a new column indicating the day of the week for that date, and change the format of the column names to lowercase for each dataset respectively.
+```
+# daily_activity: change the date format + add a new column + change the column name
+daily_activity <- rename_with(daily_activity, tolower)
+daily_activity$activitydate = as.Date(daily_activity$activitydate, format = "%m/%d/%Y")
+daily_activity_analyze <- daily_activity %>% mutate(weekday = weekdays(activitydate), .after = activitydate)
+
+# daily_steps : change the date format + add a new column + change the column name
+daily_steps <- rename_with(daily_steps, tolower)
+daily_steps$activityday = as.Date(daily_steps$activityday, format = "%m/%d/%Y")
+daily_steps_analyze <- daily_steps %>% 
+mutate(weekday = weekdays(activityday), .after =activityday)
+  
+# sleep_day: change the date format + add a new column + change the column name
+sleep_day <- rename_with(sleep_day, tolower)
+sleep_day$sleepday = as.Date(sleep_day$sleepday, format = "%m/%d/%Y %I:%M:%S %p")
+sleepday <- sleep_day %>% mutate(weekday = weekdays(sleepday), .after =sleepday)
+
+# daily_calories: change the date format + add a new column + change the column name
+daily_calories <- rename_with(daily_calories, tolower)
+daily_calories$activityday = as.Date(daily_calories$activityday, format = "%m/%d/%Y")
+daily_calories_analyze <- daily_calories %>% mutate(weekday = weekdays(activityday), .after =activityday)
+
+# weight_info: change the date format + add a new column + change the column name
+weight_info <- rename_with(weight_info, tolower)
+weight_info$date = as.Date(weight_info$date, format = "%m/%d/%Y %I:%M:%S %p")
+weight_infos <- weight_info %>% mutate(weekday = weekdays(date), .after =date)
+
+# daily_intensity: change the date format + add a new column + change the column name
+daily_intensity <- rename_with(daily_intensity, tolower)
+daily_intensity$activityday = as.Date(daily_intensity$activityday, format = "%m/%d/%Y")
+daily_intensities <- daily_intensity %>% mutate(weekday = weekdays(activityday), .after =activityday)
+```  
+<a id="5"></a>
+## 4. Analyze
+
+First, we want to have a general idea on how many users actually used Fitbit to track their activities.
+```
+n_distinct(daily_activity$id)
+n_distinct(daily_steps$id)
+n_distinct(sleep_day$id)
+n_distinct(daily_calories$id)
+n_distinct(weight_infos$id)
+n_distinct(daily_intensities$id)
+
+#how many users are using Fitbit in a table
+Users_Summary =  tibble(DailyActivity = n_distinct(daily_activity$id),
+DailySteps = n_distinct(daily_steps$id),
+SleepDay = n_distinct(sleep_day$id),
+DailyCalories = n_distinct(daily_calories$id),
+WeightInfor = n_distinct(weight_infos$id),
+DailyIntensities = n_distinct(daily_intensities$id))
+```
+**We can see from the result that 33 participants used Fitbit to track their daily activity, daily steps, daily intensities, and daily calories; 24 of them used sleep monitoring. Only 8 users used Fitbit to track their weight.**
+
+### Analyze daily_sleep data
+```
+# calculate total minutes awake and convert asleep and in bed time into hours
+sleepdayavg <- sleepday %>% 
+            mutate(total_minutes_awake = totaltimeinbed - totalminutesasleep,
+                  total_hours_asleep = totalminutesasleep / 60,
+                  total_hours_in_bed = totaltimeinbed / 60)
+
+#average time asleep, awake, and in bed
+avg_hours_sleep <- round(mean(sleepdayavg$total_hours_asleep), digits = 1)
+avg_hours_in_bed <- round(mean(sleepdayavg$total_hours_in_bed), digits = 1)
+round(mean(sleepdayavg$total_minutes_awake), digits = 1)
+
+#adjust the order
+sleepdayavg$weekday <- ordered(sleepdayavg$weekday, levels=c("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"))
+
+#visualize 
+sleepdayviz <- sleepdayavg %>%
+            group_by(weekday) %>%
+            summarise(average_asleep = mean (total_hours_asleep)) %>%
+            ggplot(mapping = aes(x = weekday, y = average_asleep)) +
+            geom_col(fill = "light blue", color = "white") +
+            geom_hline(aes(yintercept = avg_hours_sleep), linetype = "dashed", color = "dark blue") +
+            geom_text(y = avg_hours_sleep, label = avg_hours_sleep, x=7.0, size = 4, vjust = -0.5)+
+            labs(title = "Average Asleep Time Per Weekday") +
+            theme_bw()
+            
+sleepdayviz
+```
+**After analyzing the daily_sleep data, we can conclude that people spend around <b><mark>40 minutes </mark></b> in bed on average before they fall asleep and they tend to sleep around <b><mark>7 hours on average</mark></b>. People can meet the 7-hour average sleep on weekends and some of the weekdays.**
+### Analyze daily_intensities data
+```
+daily_intensities_data <- daily_intensities %>%
+select(sedentaryminutes, lightlyactiveminutes, fairlyactiveminutes, veryactiveminutes) %>%
+summary()
+
+daily_intensities_data
+```
+**We could see from the result that the average sedentary time is 991 minutes / 16.5 hours and the average fairly active time is only 14 minutes / 0.2 hours. Since sitting is now considered as <b><a href="https://www.startstanding.org/sitting-new-smoking/">the new smoking</a></b>, people should spend more time on daily activities, either going for a walk after each meal or stretching during work breaks. These small activities may also help give your body and mind a boost of energy.**
+
+### Analyze daily_steps data
+```
+#calculate the average steps per weekday
+avg_steps <- round(mean(daily_steps_analyze$steptotal), digits = 2)
+avg_steps
+
+#adjust the order
+daily_steps_analyze$weekday <- ordered(daily_steps_analyze$weekday, levels=c("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"))
+
+#visualize the average steps per weekday
+stepsviz <- daily_steps_analyze %>%
+            group_by(weekday) %>%
+            summarise(average_steps = mean (steptotal)) %>%
+            ggplot(mapping = aes(x = weekday, y = average_steps)) +
+            geom_col(fill = "plum4", color = "white") +
+            geom_hline(yintercept = avg_steps, linetype = "dashed", color = "grey12") +
+            geom_text(y = avg_steps, label = avg_steps, x = 7, size = 4, vjust = -0.3)+
+            labs(title = "Average Steps Per Weekday") +
+            theme_bw()
+
+stepsviz
+```
+**From the result, we could conclude that people take around 7638 steps on average. This number is far from enough compared with what <b><a href="https://www.huffpost.com/entry/what-science-actually-says-about-taking-10-000-steps-a-day_b_610874f9e4b0497e67026bdd"> the science says</a></b> that people who take 10,000 steps per day have lower blood pressure and better mood. Living an active lifestyle is benefitial.**
+### Analyze daily_calories data
+```
+#calculate the average calories burned per weekday
+avg_calories <- round(mean(daily_calories_analyze$calories), digits = 2)
+avg_calories
+
+#adjust the date order
+daily_calories_analyze$weekday <- ordered(daily_calories_analyze$weekday, levels=c("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"))
+
+#visualize the average calories burned per weekday
+caloriesviz <- daily_calories_analyze %>%
+            group_by(weekday) %>%
+            summarise(average_calories = mean (calories)) %>%
+            ggplot(mapping = aes(x = weekday, y = average_calories)) +
+            geom_col(fill = "olivedrab2", color = "white") +
+            geom_hline(yintercept = avg_calories, linetype = "dashed", color = "grey12") +
+            geom_text(y = avg_calories, label = avg_calories, x = 7, size = 4, vjust = -0.3)+
+            labs(title = "Average Calories Burned in a Week") +
+            theme_bw()
+
+caloriesviz
+```
+**The data shows that the average calories burned is around 2303. Besides, the trend of the average calories burned in a week is similar to the trend of the average steps. Therefore, we want to furthur expore the datasets by finding out if there are any relationships between calories and steps.**
+
+### Relationship between daily_calories and daily_steps
+```
+#visualize the relationship between calories and steps
+steps_calories_viz<- ggplot(data = daily_activity_analyze, aes(x = totalsteps, y = calories))+
+geom_point (color = 'dodgerblue2')+
+geom_smooth()+
+labs(title = 'The Relationship Between Calories and Steps')
+
+steps_calories_viz
+
+#use model to test
+steps_calories = lm(totalsteps~calories,data = daily_activity_analyze) 
+summary(steps_calories)
+```
+
+**We could clearly see from the graph above that there is a positive relationship between total steps and total calories burned. Also, by running the model test, since P-value is less than 0.05, we could conclude that the model is statistically significant, and when calories increase by 1 unit, total steps increase 4 units on average.**
+
+### Relationship between daily_calories and daily_intensities
+```
+#convert daily_intensities data from wide table to long table
+daily_activity_long <- gather(daily_activity_analyze, intensitytype, intensityminutes, veryactiveminutes:sedentaryminutes, factor_key=TRUE)
+
+#visualize daily active intensity and calories
+ggplot(data = daily_activity_long, aes(x = intensityminutes, y = calories)) +
+geom_point(aes(color = intensitytype)) +
+geom_smooth(aes(linetype = intensitytype)) +
+facet_wrap(~intensitytype, scales = "free") +
+labs(title = 'The Relationship Between Daily Active Intensity and Calories Burned')
+
+#visualization
+
+#adjust the date order
+daily_activity_long$weekday <- ordered(daily_activity_long$weekday, levels=c("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"))
+
+mean_daily_intensity <- daily_activity_long %>%
+    group_by(weekday, intensitytype) %>%
+    summarise(mean_intensity = mean (intensityminutes)) %>%
+    ggplot(mapping = aes(x = weekday, y = mean_intensity)) +
+    geom_col(aes(fill = intensitytype), position = position_dodge())+
+    labs(title = 'Average Intensity by Type', caption = 'Figure.1')
+mean_daily_intensity
+```
+* **After analyzing the relationship between daily_calories and daily_intensities, we did not see any linear relationships from the graphs, thus, we decided to dig into the hourly_intensities data.**
+* **From figure.1, we could see that the average sedentary minutes is way higher than other intensity types, which may suggest that we should focus on Fitbit's day-to-day applications when it comes to marketing strategies.**
+
+### Hourly intensity
+```
+#import hourly_intensities data
+hourly_intensity <- read.csv("/kaggle/input/fitbit/Fitabase Data 4.12.16-5.12.16/hourlyIntensities_merged.csv")
+
+#change the format
+hourly_intensity_analyze <- rename_with(hourly_intensity, tolower)
+hourly_intensity_analyze$activityhour = as.POSIXct(hourly_intensity_analyze$activityhour, format = "%m/%d/%Y %I:%M:%S %p", tz=Sys.timezone())
+
+hourly_intensity_separate <- hourly_intensity_analyze %>% 
+mutate(datetime = activityhour, date = date(datetime), time = hour(datetime))
+
+#clean the data
+hourly_intensity_separate <- hourly_intensity_separate %>% 
+  distinct() %>% 
+  drop_na()
+  
+ #visualization
+hourly_intensity_viz <- hourly_intensity_separate %>%
+                            group_by(time) %>%
+                            summarise(mean_intensity = mean(totalintensity)) %>%
+                            ggplot(mapping = aes(x = time, y = mean_intensity)) +
+                            geom_col(aes(fill = mean_intensity), color = 1) +
+                            scale_fill_gradient(low = "green", high = "red")  +
+                            scale_x_continuous(breaks = unique(hourly_intensity_separate$time))+
+                            theme(axis.text.x = element_text(angle = 30))+
+                            labs(title = 'Average Active Intensity in a Day')
+
+hourly_intensity_viz
+```
+**We could conclude from the graph above that participants are more active between 8am and 8pm as the average intensity appears "high" during this period of time, which also suggests that people use Fitbit to track their activity intensity on a regular basis.**
+
+<a id="6"></a>
+## 5. Share & Act
+
+Bellabeat is a successful small company, but they have the potential to become a larger player in the global smart device market. Now, let's take a look at our findings which could help unlock new growth opportunities for the company.
+
+* #### **Number of Users**
+```
+Users_Summary 
+```
+All participants used Fitbit to track their daily activity, steps, intensities, and calories; 24 of them used sleep monitoring, and only 8 users tracked their weight. In order to help guide marketing stategy for Bellabeat, the data of daily activity, daily steps, daily intensities, and daily calories can be mainly used to make further analyses and suggestions.
+
+* #### **Target Audience**
+```
+mean_daily_intensity
+```
+We can see from figure.1 that the sedentary minutes are way higher than other intensity types on average, which may suggests that our participants work full-time jobs and need to spend their day sitting at the tables and doing their works. Thus, we should focus on Fitbit's day-to-day applications when it comes to marketing strategies.
+```
+stepsviz
+hourly_intensity_viz
+```
+Based on the graphs above, we can conclude that users used Fitbit as a daily accessory to track their steps and they are more active between 8am and 8pm in a day. Thus, we should target people who would not only purchase a smart device for workouts or other specific activities, but also for their daily activities. 
+```
+sleepdayviz
+```
+we can see from the graph above that people spend around <b><mark>40 minutes </mark></b> in bed on average before they fall asleep and they tend to sleep around <b><mark>7 hours on average</mark></b>. As 24 users used Fitbit to track their sleep quality, we can use this feature to target people that who want to adopt a healthy lifestyle by getting enough sleep.
 
 * #### **Recommendations**
 1. Since Bellabeat is a a high-tech manufacturer of health-focused products for women, we assume that the vast majority of our consumers would be women. And according to the findings above, we could design our products as fashion accessories that would make people feel comfortable wearing it in any occasions.
@@ -51,4 +344,3 @@ library(tidyr)
 2. The Bellabeat app or the smart devices should allow users to set a sleep schedule and a sleep focus. The sleep focus will be activated automatically based on the sleep scehdule set in the app. Also, our app should include a goal setting option to help customers meet their goals, and if their alarm setting does not meet the goal, recommendations or warnings should be provided.
 
 3. Emphasize on the fact that how underweight or overweight can impact our health. Although only 8 users used Fitbit to track their weights, the importance between weight and health should not be neglected. We should encourgae customers to use more features on our apps, track and reflect on those data in order to live a healthy lifestyle.
-4. 
