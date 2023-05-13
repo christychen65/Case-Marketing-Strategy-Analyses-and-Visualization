@@ -24,3 +24,13 @@ Besides, the dataset includes information about daily activity, steps, and heart
 * This survey took place 6 years ago. The findings may not be helpful for today.
 
 <a id="4"></a>
+
+## 3. Process
+
+* First, let's load packages and files in R.
+#Loading packages
+library(tidyverse)
+library(lubridate)
+library(ggplot2)
+library(dplyr)
+library(tidyr)
