@@ -36,6 +36,14 @@ Besides, the dataset includes information about daily activity, steps, and heart
 ## 3. Process
 
 * First, let's load packages and files in R.
+```
+#Loading packages
+library(tidyverse)
+library(lubridate)
+library(ggplot2)
+library(dplyr)
+library(tidyr)
+```
 
 * #### **Recommendations**
 1. Since Bellabeat is a a high-tech manufacturer of health-focused products for women, we assume that the vast majority of our consumers would be women. And according to the findings above, we could design our products as fashion accessories that would make people feel comfortable wearing it in any occasions.
@@ -43,3 +51,4 @@ Besides, the dataset includes information about daily activity, steps, and heart
 2. The Bellabeat app or the smart devices should allow users to set a sleep schedule and a sleep focus. The sleep focus will be activated automatically based on the sleep scehdule set in the app. Also, our app should include a goal setting option to help customers meet their goals, and if their alarm setting does not meet the goal, recommendations or warnings should be provided.
 
 3. Emphasize on the fact that how underweight or overweight can impact our health. Although only 8 users used Fitbit to track their weights, the importance between weight and health should not be neglected. We should encourgae customers to use more features on our apps, track and reflect on those data in order to live a healthy lifestyle.
+4. 
