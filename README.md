@@ -68,6 +68,8 @@ sum(duplicated(daily_calories))
 sum(duplicated(weight_info))
 sum(duplicated(daily_intensity))
 ```
+
+```
 #Removing duplicates and N/A values
 daily_activity <- daily_activity %>% 
   distinct() %>% 
@@ -99,28 +101,23 @@ daily_intensity <- daily_intensity %>%
 daily_activity <- rename_with(daily_activity, tolower)
 daily_activity$activitydate = as.Date(daily_activity$activitydate, format = "%m/%d/%Y")
 daily_activity_analyze <- daily_activity %>% mutate(weekday = weekdays(activitydate), .after = activitydate)
-
 # daily_steps : change the date format + add a new column + change the column name
 daily_steps <- rename_with(daily_steps, tolower)
 daily_steps$activityday = as.Date(daily_steps$activityday, format = "%m/%d/%Y")
 daily_steps_analyze <- daily_steps %>% 
-mutate(weekday = weekdays(activityday), .after =activityday)
-  
+mutate(weekday = weekdays(activityday), .after =activityday) 
 # sleep_day: change the date format + add a new column + change the column name
 sleep_day <- rename_with(sleep_day, tolower)
 sleep_day$sleepday = as.Date(sleep_day$sleepday, format = "%m/%d/%Y %I:%M:%S %p")
 sleepday <- sleep_day %>% mutate(weekday = weekdays(sleepday), .after =sleepday)
-
 # daily_calories: change the date format + add a new column + change the column name
 daily_calories <- rename_with(daily_calories, tolower)
 daily_calories$activityday = as.Date(daily_calories$activityday, format = "%m/%d/%Y")
 daily_calories_analyze <- daily_calories %>% mutate(weekday = weekdays(activityday), .after =activityday)
-
 # weight_info: change the date format + add a new column + change the column name
 weight_info <- rename_with(weight_info, tolower)
 weight_info$date = as.Date(weight_info$date, format = "%m/%d/%Y %I:%M:%S %p")
 weight_infos <- weight_info %>% mutate(weekday = weekdays(date), .after =date)
-
 # daily_intensity: change the date format + add a new column + change the column name
 daily_intensity <- rename_with(daily_intensity, tolower)
 daily_intensity$activityday = as.Date(daily_intensity$activityday, format = "%m/%d/%Y")
@@ -137,7 +134,6 @@ n_distinct(sleep_day$id)
 n_distinct(daily_calories$id)
 n_distinct(weight_infos$id)
 n_distinct(daily_intensities$id)
-
 #how many users are using Fitbit in a table
 Users_Summary =  tibble(DailyActivity = n_distinct(daily_activity$id),
 DailySteps = n_distinct(daily_steps$id),
