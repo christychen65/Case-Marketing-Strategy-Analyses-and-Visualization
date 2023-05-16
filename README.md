@@ -1,5 +1,5 @@
 # Case-Study-Marketing-Strategy-Analyses-and-Visualization
-
+![Bellabeat.png](attachment:520ed69b-ca8d-4fc1-bc83-f6c4e03c0e6d.png)
 ### Table of contents
 * [Introduction](#1)
 * [1. Prepare](#2)
