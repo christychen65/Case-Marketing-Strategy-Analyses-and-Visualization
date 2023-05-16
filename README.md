@@ -1,5 +1,5 @@
 # Case-Study-Marketing-Strategy-Analyses-and-Visualization
-![Bellabeat.png](attachment:[520ed69b-ca8d-4fc1-bc83-f6c4e03c0e6d.png](https://github.com/christychen65/Case-Marketing-Strategy-Analyses-and-Visualization/assets/132826012/2c777f37-81be-4448-beed-e256922c8f58))
+![Bellabeat.png](https://github.com/christychen65/Case-Marketing-Strategy-Analyses-and-Visualization/assets/132826012/2c777f37-81be-4448-beed-e256922c8f58)
 ### Table of contents
 * [Introduction](#1)
 * [1. Prepare](#2)
