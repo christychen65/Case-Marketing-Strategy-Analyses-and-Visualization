@@ -68,7 +68,7 @@ sum(duplicated(daily_calories))
 sum(duplicated(weight_info))
 sum(duplicated(daily_intensity))
 ```
-
+![Bellabeat.png](https://github.com/christychen65/Case-Marketing-Strategy-Analyses-and-Visualization/assets/132826012/84790274-5237-4e66-bb4a-0a64d2c1805f)
 ```
 #Removing duplicates and N/A values
 daily_activity <- daily_activity %>% 
@@ -148,6 +148,7 @@ DailyCalories = n_distinct(daily_calories$id),
 WeightInfor = n_distinct(weight_infos$id),
 DailyIntensities = n_distinct(daily_intensities$id))
 ```
+![Bellabeat.png](https://github.com/christychen65/Case-Marketing-Strategy-Analyses-and-Visualization/assets/132826012/8bbac892-35ff-4b2d-b895-67e1ec6f17cd)
 **We can see from the result that 33 participants used Fitbit to track their daily activity, daily steps, daily intensities, and daily calories; 24 of them used sleep monitoring. Only 8 users used Fitbit to track their weight.**
 
 ### Analyze daily_sleep data
@@ -179,6 +180,7 @@ sleepdayviz <- sleepdayavg %>%
             
 sleepdayviz
 ```
+![Bellabeat.png](https://github.com/christychen65/Case-Marketing-Strategy-Analyses-and-Visualization/assets/132826012/80e1cc66-9f12-46eb-b01d-c5ea47659c26)
 **After analyzing the daily_sleep data, we can conclude that people spend around <b><mark>40 minutes </mark></b> in bed on average before they fall asleep and they tend to sleep around <b><mark>7 hours on average</mark></b>. People can meet the 7-hour average sleep on weekends and some of the weekdays.**
 ### Analyze daily_intensities data
 ```
@@ -188,6 +190,7 @@ summary()
 
 daily_intensities_data
 ```
+![Bellabeat.png](https://github.com/christychen65/Case-Marketing-Strategy-Analyses-and-Visualization/assets/132826012/a266c3ce-002e-42c6-b5cb-74757156f13e)
 **We could see from the result that the average sedentary time is 991 minutes / 16.5 hours and the average fairly active time is only 14 minutes / 0.2 hours. Since sitting is now considered as <b><a href="https://www.startstanding.org/sitting-new-smoking/">the new smoking</a></b>, people should spend more time on daily activities, either going for a walk after each meal or stretching during work breaks. These small activities may also help give your body and mind a boost of energy.**
 
 ### Analyze daily_steps data
@@ -212,6 +215,8 @@ stepsviz <- daily_steps_analyze %>%
 
 stepsviz
 ```
+![Bellabeat.png](https://github.com/christychen65/Case-Marketing-Strategy-Analyses-and-Visualization/assets/132826012/6cf13921-be6d-403d-8d94-7542142b0029)
+
 **From the result, we could conclude that people take around 7638 steps on average. This number is far from enough compared with what <b><a href="https://www.huffpost.com/entry/what-science-actually-says-about-taking-10-000-steps-a-day_b_610874f9e4b0497e67026bdd"> the science says</a></b> that people who take 10,000 steps per day have lower blood pressure and better mood. Living an active lifestyle is benefitial.**
 ### Analyze daily_calories data
 ```
@@ -235,6 +240,7 @@ caloriesviz <- daily_calories_analyze %>%
 
 caloriesviz
 ```
+![Bellabeat.png](https://github.com/christychen65/Case-Marketing-Strategy-Analyses-and-Visualization/assets/132826012/9cd219fa-4982-412b-9132-0b44b9742761)
 **The data shows that the average calories burned is around 2303. Besides, the trend of the average calories burned in a week is similar to the trend of the average steps. Therefore, we want to furthur expore the datasets by finding out if there are any relationships between calories and steps.**
 
 ### Relationship between daily_calories and daily_steps
@@ -252,6 +258,9 @@ steps_calories = lm(totalsteps~calories,data = daily_activity_analyze)
 summary(steps_calories)
 ```
 
+![Bellabeat.png](https://github.com/christychen65/Case-Marketing-Strategy-Analyses-and-Visualization/assets/132826012/dbbf39bb-3eb1-4187-aa94-8b07e9a8d708")
+![Bellabeat.png](https://github.com/christychen65/Case-Marketing-Strategy-Analyses-and-Visualization/assets/132826012/34d7c2b7-ba68-43a0-892e-b7d2ca6da945)
+
 **We could clearly see from the graph above that there is a positive relationship between total steps and total calories burned. Also, by running the model test, since P-value is less than 0.05, we could conclude that the model is statistically significant, and when calories increase by 1 unit, total steps increase 4 units on average.**
 
 ### Relationship between daily_calories and daily_intensities
@@ -265,7 +274,9 @@ geom_point(aes(color = intensitytype)) +
 geom_smooth(aes(linetype = intensitytype)) +
 facet_wrap(~intensitytype, scales = "free") +
 labs(title = 'The Relationship Between Daily Active Intensity and Calories Burned')
-
+```
+![Bellabeat.png](https://github.com/christychen65/Case-Marketing-Strategy-Analyses-and-Visualization/assets/132826012/8bca3431-033d-4564-a133-9fd0fe421d56)
+```
 #visualization
 
 #adjust the date order
@@ -279,6 +290,7 @@ mean_daily_intensity <- daily_activity_long %>%
     labs(title = 'Average Intensity by Type', caption = 'Figure.1')
 mean_daily_intensity
 ```
+![Image.png](https://github.com/christychen65/Case-Marketing-Strategy-Analyses-and-Visualization/assets/132826012/155eb8a2-b17e-4983-a484-42d4969ba911)
 * **After analyzing the relationship between daily_calories and daily_intensities, we did not see any linear relationships from the graphs, thus, we decided to dig into the hourly_intensities data.**
 * **From figure.1, we could see that the average sedentary minutes is way higher than other intensity types, which may suggest that we should focus on Fitbit's day-to-day applications when it comes to marketing strategies.**
 
@@ -312,6 +324,7 @@ hourly_intensity_viz <- hourly_intensity_separate %>%
 
 hourly_intensity_viz
 ```
+![Image.png](https://github.com/christychen65/Case-Marketing-Strategy-Analyses-and-Visualization/assets/132826012/ab8e7a58-7f09-4cd8-9e29-a17b821d707a)
 **We could conclude from the graph above that participants are more active between 8am and 8pm as the average intensity appears "high" during this period of time, which also suggests that people use Fitbit to track their activity intensity on a regular basis.**
 
 <a id="6"></a>
@@ -323,21 +336,26 @@ Bellabeat is a successful small company, but they have the potential to become a
 ```
 Users_Summary 
 ```
+![Image.png](https://github.com/christychen65/Case-Marketing-Strategy-Analyses-and-Visualization/assets/132826012/b81888bc-c485-4294-9ade-bd758920c910)
 All participants used Fitbit to track their daily activity, steps, intensities, and calories; 24 of them used sleep monitoring, and only 8 users tracked their weight. In order to help guide marketing stategy for Bellabeat, the data of daily activity, daily steps, daily intensities, and daily calories can be mainly used to make further analyses and suggestions.
 
 * #### **Target Audience**
 ```
 mean_daily_intensity
 ```
+![Image.png](https://github.com/christychen65/Case-Marketing-Strategy-Analyses-and-Visualization/assets/132826012/521dd90f-01c2-4395-a7db-43ff1f37e1e8)
 We can see from figure.1 that the sedentary minutes are way higher than other intensity types on average, which may suggests that our participants work full-time jobs and need to spend their day sitting at the tables and doing their works. Thus, we should focus on Fitbit's day-to-day applications when it comes to marketing strategies.
 ```
 stepsviz
 hourly_intensity_viz
 ```
+![Image.png](https://github.com/christychen65/Case-Marketing-Strategy-Analyses-and-Visualization/assets/132826012/a5208c34-bd08-4ca4-8f60-ed2ad1a33456)
+![Image.png](https://github.com/christychen65/Case-Marketing-Strategy-Analyses-and-Visualization/assets/132826012/ebd89c5f-f9f8-412a-80ec-d74abb3e43cd)
 Based on the graphs above, we can conclude that users used Fitbit as a daily accessory to track their steps and they are more active between 8am and 8pm in a day. Thus, we should target people who would not only purchase a smart device for workouts or other specific activities, but also for their daily activities. 
 ```
 sleepdayviz
 ```
+![Image.png](https://github.com/christychen65/Case-Marketing-Strategy-Analyses-and-Visualization/assets/132826012/be02c093-07cb-4d51-807a-bf088853a247)
 we can see from the graph above that people spend around <b><mark>40 minutes </mark></b> in bed on average before they fall asleep and they tend to sleep around <b><mark>7 hours on average</mark></b>. As 24 users used Fitbit to track their sleep quality, we can use this feature to target people that who want to adopt a healthy lifestyle by getting enough sleep.
 
 * #### **Recommendations**
